@@ -52,7 +52,7 @@ export class RadioAPI {
     const countries: Country[] = await response.json();
     return countries
       .filter(country => country.stationcount > 0)
-      .sort((a, b) => b.stationcount - a.stationcount);
+      .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
   }
 
   static async recordClick(stationUuid: string): Promise<void> {

@@ -36,7 +36,7 @@ export function SearchControls({ onSearch, isSearching }: SearchControlsProps) {
   const handleSearch = () => {
     onSearch({
       name: name.trim() || undefined,
-      country: selectedCountry || undefined,
+      country: selectedCountry && selectedCountry !== 'all' ? selectedCountry : undefined,
     });
   };
 
@@ -83,7 +83,7 @@ export function SearchControls({ onSearch, isSearching }: SearchControlsProps) {
               <SelectValue placeholder={loadingCountries ? "Cargando países..." : "Selecciona un país"} />
             </SelectTrigger>
             <SelectContent className="bg-popover border shadow-lg z-50">
-              <SelectItem value="">Todos los países</SelectItem>
+              <SelectItem value="all">Todos los países</SelectItem>
               {countries.map((country) => (
                 <SelectItem key={country.iso_3166_1} value={country.name}>
                   {country.name} ({country.stationcount} emisoras)

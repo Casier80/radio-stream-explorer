@@ -12,6 +12,8 @@ export class RadioAPI {
   }
 
   static async searchStations(params: {
+    name?: string;
+    country?: string;
     query?: string;
     limit?: number;
   }): Promise<RadioStation[]> {
@@ -23,10 +25,18 @@ export class RadioAPI {
     });
 
     if (params.query) {
-      // Buscar en múltiples campos: nombre, país y tags (géneros)
+      // Mobile search: búsqueda general en nombre, país y tags
       searchParams.append('name', params.query);
       searchParams.append('country', params.query);
       searchParams.append('tag', params.query);
+    } else {
+      // Web search: búsqueda específica por campos
+      if (params.name) {
+        searchParams.append('name', params.name);
+      }
+      if (params.country) {
+        searchParams.append('country', params.country);
+      }
     }
 
     const response = await this.fetchWithUserAgent(

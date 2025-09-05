@@ -33,11 +33,11 @@ const Index = () => {
     toggleFavorite,
   } = useFavorites();
 
-  const handleSearch = async (params: { name?: string; country?: string }) => {
-    if (!params.name && !params.country) {
+  const handleSearch = async (params: { query?: string }) => {
+    if (!params.query) {
       toast({
         title: "Búsqueda vacía",
-        description: "Por favor ingresa un nombre de emisora o selecciona un país.",
+        description: "Por favor ingresa un término de búsqueda.",
         variant: "destructive",
       });
       return;
@@ -46,7 +46,7 @@ const Index = () => {
     setIsSearching(true);
     try {
       const results = await RadioAPI.searchStations({
-        ...params,
+        query: params.query,
         limit: 50,
       });
       

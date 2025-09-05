@@ -7,6 +7,19 @@
     <meta name="description" content="Reproductor de radio online accesible. Descubre y escucha emisoras de radio de todo el mundo. Busca por país, agrega favoritos y controla el volumen." />
     <meta name="author" content="Reproductor Radio" />
     <meta name="keywords" content="radio online, emisoras radio, reproductor radio, radio mundial, radio accesible" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1a1a1a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Radio Online" />
+    <meta name="msapplication-TileColor" content="#1a1a1a" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="/placeholder.svg" />
 
     <meta property="og:title" content="Reproductor de Radio Online - Emisoras de Todo el Mundo" />
     <meta property="og:description" content="Reproductor de radio online accesible con emisoras de todo el mundo" />
@@ -21,5 +34,18 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Registrar Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+              console.log('SW registrado con éxito:', registration.scope);
+            }, function(err) {
+              console.log('SW falló al registrarse:', err);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

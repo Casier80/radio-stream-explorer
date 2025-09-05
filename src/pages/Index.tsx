@@ -6,6 +6,7 @@ import { SearchControls } from '@/components/SearchControls';
 import { StationList } from '@/components/StationList';
 import { PlayerControls } from '@/components/PlayerControls';
 import { FavoritesList } from '@/components/FavoritesList';
+import { InstallPWA } from '@/components/InstallPWA';
 import { RadioAPI } from '@/services/radioAPI';
 import type { RadioStation } from '@/types/radio';
 
@@ -95,6 +96,9 @@ const Index = () => {
 
   return (
     <main className="min-h-screen bg-background">
+      {/* PWA Install Button */}
+      <InstallPWA />
+      
       {/* Hidden audio element */}
       <audio ref={audioRef} preload="none" aria-hidden="true" />
       

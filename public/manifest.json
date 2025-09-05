@@ -1,6 +1,6 @@
 {
-  "name": "Reproductor de Radio Online",
-  "short_name": "Radio Online",
+  "name": "Casier Radio",
+  "short_name": "Casier Radio",
   "description": "Reproductor de radio online accesible con emisoras de todo el mundo",
   "start_url": "/",
   "display": "standalone",

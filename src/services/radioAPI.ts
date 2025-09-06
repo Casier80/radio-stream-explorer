@@ -59,8 +59,25 @@ export class RadioAPI {
     }
 
     const countries: Country[] = await response.json();
-    return countries
-      .filter(country => country.stationcount > 0)
+    
+    // Combinar países duplicados sumando sus stationcount
+    const countryMap = new Map<string, Country>();
+    
+    countries.forEach(country => {
+      if (country.stationcount > 0) {
+        const existing = countryMap.get(country.name);
+        if (existing) {
+          // Si el país ya existe, sumar las emisoras
+          existing.stationcount += country.stationcount;
+        } else {
+          // Si es la primera vez que vemos este país, agregarlo
+          countryMap.set(country.name, { ...country });
+        }
+      }
+    });
+    
+    // Convertir el Map de vuelta a array y ordenar
+    return Array.from(countryMap.values())
       .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
   }
 

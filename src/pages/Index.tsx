@@ -2,13 +2,16 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useRadioPlayer } from '@/hooks/useRadioPlayer';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useRecentStations } from '@/hooks/useRecentStations';
 import { SearchControls } from '@/components/SearchControls';
 import { StationList } from '@/components/StationList';
 import { PlayerControls } from '@/components/PlayerControls';
 import { FavoritesList } from '@/components/FavoritesList';
+import { RecentStations } from '@/components/RecentStations';
 import { InstallPWA } from '@/components/InstallPWA';
 import { RadioAPI } from '@/services/radioAPI';
 import type { RadioStation } from '@/types/radio';
+import radioLogo from '@/assets/radio-logo.png';
 
 const Index = () => {
   const [stations, setStations] = useState<RadioStation[]>([]);
@@ -32,6 +35,12 @@ const Index = () => {
     isFavorite,
     toggleFavorite,
   } = useFavorites();
+
+  const {
+    recentStations,
+    addToRecent,
+    clearRecent,
+  } = useRecentStations();
 
   const handleSearch = async (params: { name?: string; country?: string; query?: string }) => {
     if (!params.name && !params.country && !params.query) {
@@ -85,6 +94,8 @@ const Index = () => {
   const handlePlay = async (station: RadioStation) => {
     try {
       await play(station);
+      // Agregar a emisoras recientes cuando se reproduce exitosamente
+      addToRecent(station);
       toast({
         title: "Reproduciendo",
         description: `Conectando a ${station.name}...`,
@@ -105,9 +116,16 @@ const Index = () => {
       <div className="container mx-auto p-4 max-w-6xl">
         {/* Main heading */}
         <header className="mb-8 text-center">
-          <h1 className="text-3xl font-bold mb-2">
-            Reproductor de Radio Online
-          </h1>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <img 
+              src={radioLogo} 
+              alt="Logo de la aplicación de radio"
+              className="w-16 h-16 object-contain"
+            />
+            <h1 className="text-3xl font-bold">
+              Reproductor de Radio Online
+            </h1>
+          </div>
           <p className="text-muted-foreground">
             Descubre y escucha emisoras de radio de todo el mundo
           </p>
@@ -136,7 +154,7 @@ const Index = () => {
             )}
           </div>
 
-          {/* Right column: Player and favorites */}
+          {/* Right column: Player, recent stations and favorites */}
           <div className="space-y-6">
             <PlayerControls
               playbackState={playbackState}
@@ -144,6 +162,17 @@ const Index = () => {
               onResume={resume}
               onStop={stop}
               onVolumeChange={setVolume}
+              loading={playerLoading}
+            />
+            
+            <RecentStations
+              recentStations={recentStations}
+              currentStation={playbackState.currentStation}
+              isPlaying={playbackState.isPlaying}
+              onPlay={handlePlay}
+              onPause={pause}
+              onResume={resume}
+              onClear={clearRecent}
               loading={playerLoading}
             />
             

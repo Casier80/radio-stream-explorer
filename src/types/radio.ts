@@ -30,6 +30,7 @@ export interface RadioStation {
 
 export interface Country {
   name: string;
+  originalName?: string; // Nombre original en inglés para enviar a la API
   iso_3166_1: string;
   stationcount: number;
 }

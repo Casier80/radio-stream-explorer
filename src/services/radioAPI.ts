@@ -302,11 +302,12 @@ export class RadioAPI {
       }
     });
     
-    // Convertir el Map de vuelta a array, traducir nombres y ordenar
+    // Convertir el Map de vuelta a array, mantener nombre original y traducir para mostrar, ordenar
     return Array.from(countryMap.values())
       .map(country => ({
         ...country,
-        name: this.countryTranslations[country.name] || country.name
+        originalName: country.name, // Mantener nombre original en inglés para la API
+        name: this.countryTranslations[country.name] || country.name // Nombre traducido para mostrar
       }))
       .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
   }

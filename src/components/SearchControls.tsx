@@ -119,7 +119,7 @@ export function SearchControls({ onSearch, isSearching }: SearchControlsProps) {
               <SelectContent className="bg-popover border shadow-lg z-50">
                 <SelectItem value="all">Todos los países</SelectItem>
                 {countries.map((country) => (
-                  <SelectItem key={country.iso_3166_1} value={country.name}>
+                  <SelectItem key={country.iso_3166_1} value={country.originalName || country.name}>
                     {country.name} ({country.stationcount} emisoras)
                   </SelectItem>
                 ))}

@@ -15,9 +15,9 @@ const Landing = () => {
       <header className="container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={radioLogo} alt="Casie Radio Logo" className="w-10 h-10" />
+            <img src={radioLogo} alt="Casier Radio Logo" className="w-10 h-10" />
             <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Casie Radio
+              Casier Radio
             </h1>
           </div>
           <Button onClick={handleOpenApp} className="gap-2">
@@ -61,7 +61,7 @@ const Landing = () => {
               <iframe 
                 src="/app" 
                 className="w-full h-96 md:h-[500px]"
-                title="Casie Radio App Preview"
+                title="Casier Radio App Preview"
               />
             </div>
           </div>
@@ -147,7 +147,7 @@ const Landing = () => {
           </p>
           <Button size="lg" onClick={handleOpenApp} className="gap-2 text-lg px-8 py-6">
             <Radio className="w-5 h-5" />
-            Abrir Casie Radio
+            Abrir Casier Radio
           </Button>
         </div>
       </section>
@@ -156,8 +156,8 @@ const Landing = () => {
       <footer className="bg-muted/50 py-8 border-t">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <img src={radioLogo} alt="Casie Radio" className="w-8 h-8" />
-            <span className="font-semibold">Casie Radio</span>
+            <img src={radioLogo} alt="Casier Radio" className="w-8 h-8" />
+            <span className="font-semibold">Casier Radio</span>
           </div>
           <p className="text-sm text-muted-foreground">
             Radio mundial online - Desarrollado con ❤️

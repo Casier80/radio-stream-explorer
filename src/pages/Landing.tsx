@@ -1,12 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, Search, Heart, History, Smartphone, Globe, Radio } from "lucide-react";
+import { ExternalLink, Search, Heart, History, Smartphone, Globe, Radio, Share2 } from "lucide-react";
 import radioLogo from "@/assets/radio-logo.png";
 
 const Landing = () => {
   const handleOpenApp = () => {
     window.open("/app", "_blank");
+  };
+
+  const handleShareWhatsApp = () => {
+    const text = "🎵 ¡Descubre Casier Radio! Escucha emisoras de todo el mundo gratis desde tu navegador 📻";
+    const url = window.location.origin;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text + " " + url)}`;
+    window.open(whatsappUrl, "_blank");
   };
 
   return (
@@ -145,10 +152,16 @@ const Landing = () => {
           <p className="text-lg text-muted-foreground mb-8">
             No necesitas registro ni instalación. Comienza a escuchar ahora mismo.
           </p>
-          <Button size="lg" onClick={handleOpenApp} className="gap-2 text-lg px-8 py-6">
-            <Radio className="w-5 h-5" />
-            Abrir Casier Radio
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" onClick={handleOpenApp} className="gap-2 text-lg px-8 py-6">
+              <Radio className="w-5 h-5" />
+              Abrir Casier Radio
+            </Button>
+            <Button variant="outline" size="lg" onClick={handleShareWhatsApp} className="gap-2 text-lg px-8 py-6">
+              <Share2 className="w-5 h-5" />
+              Compartir en WhatsApp
+            </Button>
+          </div>
         </div>
       </section>
 

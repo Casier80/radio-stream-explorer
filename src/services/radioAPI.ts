@@ -48,7 +48,9 @@ export class RadioAPI {
     }
 
     const stations: RadioStation[] = await response.json();
-    return stations.filter(station => station.url_resolved && station.lastcheckok === 1);
+    return stations
+      .filter(station => station.url_resolved && station.lastcheckok === 1)
+      .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
   }
 
   private static countryTranslations: { [key: string]: string } = {

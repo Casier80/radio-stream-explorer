@@ -35,6 +35,18 @@ export function PlayerControls({
       } else if (currentStation) {
         onResume();
       }
+    } else if (e.code === 'KeyS' && currentStation) {
+      e.preventDefault();
+      onStop();
+    } else if (e.code === 'KeyM') {
+      e.preventDefault();
+      onVolumeChange(volume === 0 ? 0.5 : 0);
+    } else if (e.code === 'ArrowUp') {
+      e.preventDefault();
+      onVolumeChange(Math.min(1, volume + 0.1));
+    } else if (e.code === 'ArrowDown') {
+      e.preventDefault();
+      onVolumeChange(Math.max(0, volume - 0.1));
     }
   };
 
@@ -197,9 +209,11 @@ export function PlayerControls({
               </summary>
               <div className="mt-2 space-y-1">
                 <p>• Espacio: Reproducir/Pausar</p>
+                <p>• S: Detener reproducción</p>
+                <p>• M: Silenciar/Activar audio</p>
+                <p>• ↑/↓: Subir/Bajar volumen</p>
                 <p>• Tab: Navegar entre controles</p>
                 <p>• Enter: Activar botón seleccionado</p>
-                <p>• Flechas: Ajustar volumen cuando el control está enfocado</p>
               </div>
             </details>
           </div>

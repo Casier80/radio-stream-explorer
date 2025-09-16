@@ -10,7 +10,7 @@ const Landing = () => {
   };
 
   const handleShareWhatsApp = () => {
-    const text = "🎵 ¡Descubre Casier Radio! Escucha emisoras de todo el mundo gratis desde tu navegador 📻";
+    const text = "🎵 ¡Descubre Radio Stream Explorer! Explora y escucha emisoras de todo el mundo gratis desde tu navegador 📻";
     const url = window.location.origin;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text + " " + url)}`;
     window.open(whatsappUrl, "_blank");
@@ -22,9 +22,9 @@ const Landing = () => {
       <header className="container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={radioLogo} alt="Casier Radio Logo" className="w-10 h-10" />
+            <img src={radioLogo} alt="Radio Stream Explorer Logo" className="w-10 h-10" />
             <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Casier Radio
+              Radio Stream Explorer
             </h1>
           </div>
           <Button onClick={handleOpenApp} className="gap-2">
@@ -43,12 +43,12 @@ const Landing = () => {
           </Badge>
           
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground via-foreground/90 to-primary bg-clip-text text-transparent">
-            Escucha emisoras de todo el mundo
+            Explora emisoras de radio mundial
           </h1>
           
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Descubre y disfruta miles de emisoras de radio internacionales desde tu navegador. 
-            Búsqueda global, favoritos y disponible en todos tus dispositivos.
+            Descubre y disfruta miles de estaciones de radio internacionales desde tu navegador. 
+            Exploración global, favoritos y disponible en todos tus dispositivos.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -68,7 +68,7 @@ const Landing = () => {
               <iframe 
                 src="/app" 
                 className="w-full h-96 md:h-[500px]"
-                title="Casier Radio App Preview"
+                title="Radio Stream Explorer App Preview"
               />
             </div>
           </div>
@@ -150,12 +150,12 @@ const Landing = () => {
             ¿Listo para explorar el mundo de la radio?
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
-            No necesitas registro ni instalación. Comienza a escuchar ahora mismo.
+            No necesitas registro ni instalación. Comienza a explorar ahora mismo.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" onClick={handleOpenApp} className="gap-2 text-lg px-8 py-6">
               <Radio className="w-5 h-5" />
-              Abrir Casier Radio
+              Abrir Radio Stream Explorer
             </Button>
             <Button variant="outline" size="lg" onClick={handleShareWhatsApp} className="gap-2 text-lg px-8 py-6">
               <Share2 className="w-5 h-5" />
@@ -169,11 +169,11 @@ const Landing = () => {
       <footer className="bg-muted/50 py-8 border-t">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <img src={radioLogo} alt="Casier Radio" className="w-8 h-8" />
-            <span className="font-semibold">Casier Radio</span>
+            <img src={radioLogo} alt="Radio Stream Explorer" className="w-8 h-8" />
+            <span className="font-semibold">Radio Stream Explorer</span>
           </div>
           <p className="text-sm text-muted-foreground">
-            Radio mundial online - Desarrollado con ❤️
+            Explorador de radio mundial online - Desarrollado con ❤️
           </p>
         </div>
       </footer>

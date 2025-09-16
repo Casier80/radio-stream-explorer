@@ -1,7 +1,7 @@
 {
-  "name": "Casier Radio",
-  "short_name": "Casier Radio",
-  "description": "Reproductor de radio online accesible con emisoras de todo el mundo",
+  "name": "Radio Stream Explorer",
+  "short_name": "Radio Stream Explorer",
+  "description": "Explorador de emisoras de radio online con acceso a estaciones de todo el mundo",
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#1a1a1a",

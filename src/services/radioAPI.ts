@@ -321,4 +321,26 @@ export class RadioAPI {
       console.warn('No se pudo registrar el click:', error);
     }
   }
+
+  static async getRandomStation(): Promise<RadioStation | null> {
+    try {
+      const response = await this.fetchWithUserAgent(
+        `${BASE_URL}/stations/search?limit=1&order=random&hidebroken=true`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`Error al obtener emisora aleatoria: ${response.statusText}`);
+      }
+
+      const stations: RadioStation[] = await response.json();
+      const validStations = stations.filter(
+        station => station.url_resolved && station.lastcheckok === 1
+      );
+      
+      return validStations.length > 0 ? validStations[0] : null;
+    } catch (error) {
+      console.error('Error al obtener emisora aleatoria:', error);
+      return null;
+    }
+  }
 }

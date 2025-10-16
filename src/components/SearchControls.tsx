@@ -3,16 +3,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, Shuffle } from 'lucide-react';
 import type { Country } from '@/types/radio';
 import { RadioAPI } from '@/services/radioAPI';
 
 interface SearchControlsProps {
   onSearch: (params: { name?: string; country?: string; query?: string }) => void;
   isSearching: boolean;
+  onRandomStation: () => void;
 }
 
-export function SearchControls({ onSearch, isSearching }: SearchControlsProps) {
+export function SearchControls({ onSearch, isSearching, onRandomStation }: SearchControlsProps) {
   const [name, setName] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [countries, setCountries] = useState<Country[]>([]);
@@ -132,24 +133,37 @@ export function SearchControls({ onSearch, isSearching }: SearchControlsProps) {
         </div>
       )}
 
-      <Button
-        onClick={handleSearch}
-        disabled={isSearching}
-        className="w-full md:w-auto"
-        aria-describedby="search-button-help"
-      >
-        {isSearching ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-            Buscando...
-          </>
-        ) : (
-          <>
-            <Search className="mr-2 h-4 w-4" aria-hidden="true" />
-            Buscar Emisoras
-          </>
-        )}
-      </Button>
+      <div className="flex gap-2">
+        <Button
+          onClick={handleSearch}
+          disabled={isSearching}
+          className="flex-1 md:flex-initial md:w-auto"
+          aria-describedby="search-button-help"
+        >
+          {isSearching ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+              Buscando...
+            </>
+          ) : (
+            <>
+              <Search className="mr-2 h-4 w-4" aria-hidden="true" />
+              Buscar Emisoras
+            </>
+          )}
+        </Button>
+        
+        <Button
+          onClick={onRandomStation}
+          disabled={isSearching}
+          variant="secondary"
+          className="flex-1 md:flex-initial md:w-auto"
+          aria-label="Reproducir emisora aleatoria"
+        >
+          <Shuffle className="mr-2 h-4 w-4" aria-hidden="true" />
+          Aleatoria
+        </Button>
+      </div>
       <div id="search-button-help" className="sr-only">
         Presiona Enter en los campos de búsqueda o usa este botón para buscar emisoras
       </div>

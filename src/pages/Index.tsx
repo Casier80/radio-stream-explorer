@@ -109,6 +109,35 @@ const Index = () => {
     }
   };
 
+  const handleRandomStation = async () => {
+    setIsSearching(true);
+    try {
+      const randomStation = await RadioAPI.getRandomStation();
+      
+      if (randomStation) {
+        await handlePlay(randomStation);
+        toast({
+          title: "Emisora aleatoria",
+          description: `Reproduciendo ${randomStation.name} de ${randomStation.country}`,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "No se pudo encontrar una emisora aleatoria. Intenta de nuevo.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "No se pudo obtener una emisora aleatoria.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-background">
       {/* PWA Install Button */}
@@ -140,7 +169,8 @@ const Index = () => {
           <div className="lg:col-span-2 space-y-6">
             <SearchControls 
               onSearch={handleSearch} 
-              isSearching={isSearching} 
+              isSearching={isSearching}
+              onRandomStation={handleRandomStation}
             />
             
             {stations.length > 0 && (

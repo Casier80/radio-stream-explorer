@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Play, Pause, Heart, HeartOff, Globe, Music, Zap } from 'lucide-react';
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext } from '@/components/ui/pagination';
 import type { RadioStation } from '@/types/radio';
 
 interface StationListProps {
@@ -13,6 +14,10 @@ interface StationListProps {
   onToggleFavorite: (station: RadioStation) => boolean;
   isFavorite: (stationId: string) => boolean;
   loading: boolean;
+  currentPage: number;
+  stationsPerPage: number;
+  totalStations: number;
+  onPageChange: (page: number) => void;
 }
 
 export function StationList({
@@ -24,7 +29,11 @@ export function StationList({
   onResume,
   onToggleFavorite,
   isFavorite,
-  loading
+  loading,
+  currentPage,
+  stationsPerPage,
+  totalStations,
+  onPageChange
 }: StationListProps) {
   if (stations.length === 0) {
     return (
@@ -44,6 +53,12 @@ export function StationList({
     return language || 'No especificado';
   };
 
+  // Calculate pagination
+  const totalPages = Math.ceil(totalStations / stationsPerPage);
+  const startIndex = (currentPage - 1) * stationsPerPage;
+  const endIndex = startIndex + stationsPerPage;
+  const currentStations = stations.slice(startIndex, endIndex);
+
   return (
     <section aria-labelledby="stations-heading">
       <h2 id="stations-heading" className="text-lg font-semibold mb-4">
@@ -55,7 +70,7 @@ export function StationList({
         role="list"
         aria-label={`Lista de ${stations.length} emisoras de radio`}
       >
-        {stations.map((station) => {
+        {currentStations.map((station) => {
           const isCurrentStation = currentStation?.stationuuid === station.stationuuid;
           const isFav = isFavorite(station.stationuuid);
           
@@ -156,6 +171,34 @@ export function StationList({
           );
         })}
       </div>
+
+      {totalPages > 1 && (
+        <Pagination className="mt-6">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+                aria-disabled={currentPage === 1}
+                className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              />
+            </PaginationItem>
+            
+            <PaginationItem>
+              <span className="text-sm text-muted-foreground px-4">
+                Página {currentPage} de {totalPages}
+              </span>
+            </PaginationItem>
+            
+            <PaginationItem>
+              <PaginationNext 
+                onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+                aria-disabled={currentPage === totalPages}
+                className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </section>
   );
 }

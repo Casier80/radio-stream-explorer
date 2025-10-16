@@ -16,7 +16,10 @@ import radioLogo from '@/assets/radio-logo.png';
 const Index = () => {
   const [stations, setStations] = useState<RadioStation[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
+  
+  const STATIONS_PER_PAGE = 50;
   
   const {
     audioRef,
@@ -53,10 +56,11 @@ const Index = () => {
     }
 
     setIsSearching(true);
+    setCurrentPage(1); // Reset to first page on new search
     try {
       const results = await RadioAPI.searchStations({
         ...params,
-        limit: 50,
+        limit: 1000, // Get more results for pagination
       });
       
       setStations(results);
@@ -150,6 +154,10 @@ const Index = () => {
                 onToggleFavorite={handleToggleFavorite}
                 isFavorite={isFavorite}
                 loading={playerLoading}
+                currentPage={currentPage}
+                stationsPerPage={STATIONS_PER_PAGE}
+                totalStations={stations.length}
+                onPageChange={setCurrentPage}
               />
             )}
           </div>

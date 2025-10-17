@@ -276,36 +276,62 @@ export class RadioAPI {
   };
 
   static async getCountries(): Promise<Country[]> {
-    const response = await this.fetchWithUserAgent(`${BASE_URL}/countries`);
-    
-    if (!response.ok) {
-      throw new Error(`Error al obtener países: ${response.statusText}`);
+    // Intento principal: /countries
+    let countries: Country[] = [];
+    try {
+      const response = await this.fetchWithUserAgent(`${BASE_URL}/countries`);
+      if (response.ok) {
+        countries = await response.json();
+      } else {
+        console.warn('Fallo /countries, probando /countrycodes:', response.statusText);
+      }
+    } catch (err) {
+      console.warn('Error en /countries, probando /countrycodes:', err);
     }
 
-    const countries: Country[] = await response.json();
-    
+    // Fallback: /countrycodes
+    if (!Array.isArray(countries) || countries.length === 0) {
+      try {
+        const fallbackRes = await this.fetchWithUserAgent(`${BASE_URL}/countrycodes`);
+        if (fallbackRes.ok) {
+          countries = await fallbackRes.json();
+        } else {
+          console.error('Fallo también /countrycodes:', fallbackRes.statusText);
+        }
+      } catch (err2) {
+        console.error('Error en /countrycodes:', err2);
+      }
+    }
+
+    if (!Array.isArray(countries) || countries.length === 0) {
+      throw new Error('No se pudieron obtener países');
+    }
+
     // Combinar países duplicados sumando sus stationcount
     const countryMap = new Map<string, Country>();
-    
-    countries.forEach(country => {
-      if (country.stationcount > 0) {
-        const existing = countryMap.get(country.name);
+
+    countries.forEach((country) => {
+      // Asegurar tipos
+      const name = (country as any).name as string;
+      const stationcount = Number((country as any).stationcount || 0);
+      const iso = (country as any).iso_3166_1 as string;
+
+      if (name && stationcount > 0) {
+        const existing = countryMap.get(name);
         if (existing) {
-          // Si el país ya existe, sumar las emisoras
-          existing.stationcount += country.stationcount;
+          existing.stationcount += stationcount;
         } else {
-          // Si es la primera vez que vemos este país, agregarlo
-          countryMap.set(country.name, { ...country });
+          countryMap.set(name, { name, stationcount, iso_3166_1: iso });
         }
       }
     });
-    
+
     // Convertir el Map de vuelta a array, mantener nombre original y traducir para mostrar, ordenar
     return Array.from(countryMap.values())
-      .map(country => ({
+      .map((country) => ({
         ...country,
         originalName: country.name, // Mantener nombre original en inglés para la API
-        name: this.countryTranslations[country.name] || country.name // Nombre traducido para mostrar
+        name: this.countryTranslations[country.name] || country.name, // Nombre traducido para mostrar
       }))
       .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
   }

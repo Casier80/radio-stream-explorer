@@ -117,7 +117,7 @@ export function SearchControls({ onSearch, isSearching, onRandomStation }: Searc
               <SelectTrigger id="country-select" aria-describedby="country-help">
                 <SelectValue placeholder={loadingCountries ? "Cargando países..." : "Selecciona un país"} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover text-popover-foreground border shadow-lg z-50">
                 <SelectItem value="all">Todos los países</SelectItem>
                 {countries.map((country) => (
                   <SelectItem key={country.iso_3166_1} value={country.originalName || country.name}>

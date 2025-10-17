@@ -120,7 +120,7 @@ export function SearchControls({ onSearch, isSearching, onRandomStation }: Searc
               <SelectContent className="bg-popover text-popover-foreground border shadow-lg z-50">
                 <SelectItem value="all">Todos los países</SelectItem>
                 {countries.map((country) => (
-                  <SelectItem key={country.iso_3166_1} value={country.originalName || country.name}>
+                  <SelectItem key={country.iso_3166_1 || country.originalName || country.name} value={country.originalName || country.name}>
                     {country.name} ({country.stationcount} emisoras)
                   </SelectItem>
                 ))}

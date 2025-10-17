@@ -1,14 +1,10 @@
 import type { RadioStation, Country } from '@/types/radio';
 
-const BASE_URL = 'https://de1.api.radio-browser.info/json';
+const BASE_URL = 'https://api.radio-browser.info/json';
 
 export class RadioAPI {
   private static async fetchWithUserAgent(url: string): Promise<Response> {
-    return fetch(url, {
-      headers: {
-        'User-Agent': 'RadioPlayer/1.0',
-      },
-    });
+    return fetch(url);
   }
 
   static async searchStations(params: {

@@ -276,30 +276,40 @@ export class RadioAPI {
   };
 
   static async getCountries(): Promise<Country[]> {
-    // Intento principal: /countries
-    let countries: Country[] = [];
-    try {
-      const response = await this.fetchWithUserAgent(`${BASE_URL}/countries`);
-      if (response.ok) {
-        countries = await response.json();
-      } else {
-        console.warn('Fallo /countries, probando /countrycodes:', response.statusText);
-      }
-    } catch (err) {
-      console.warn('Error en /countries, probando /countrycodes:', err);
-    }
+    // Intento robusto: probar múltiples mirrors y dos endpoints (/countries y /countrycodes)
+    const MIRRORS = [
+      BASE_URL,
+      'https://api.radio-browser.info/json',
+      'https://nl1.api.radio-browser.info/json',
+      'https://fr1.api.radio-browser.info/json',
+      'https://us1.api.radio-browser.info/json',
+    ];
 
-    // Fallback: /countrycodes
-    if (!Array.isArray(countries) || countries.length === 0) {
+    let countries: any[] = [];
+
+    for (const base of MIRRORS) {
       try {
-        const fallbackRes = await this.fetchWithUserAgent(`${BASE_URL}/countrycodes`);
-        if (fallbackRes.ok) {
-          countries = await fallbackRes.json();
-        } else {
-          console.error('Fallo también /countrycodes:', fallbackRes.statusText);
+        // 1) /countries
+        const resMain = await this.fetchWithUserAgent(`${base}/countries`);
+        if (resMain.ok) {
+          const data = await resMain.json();
+          if (Array.isArray(data) && data.length > 0) {
+            countries = data;
+            break;
+          }
         }
-      } catch (err2) {
-        console.error('Error en /countrycodes:', err2);
+
+        // 2) Fallback /countrycodes
+        const resFallback = await this.fetchWithUserAgent(`${base}/countrycodes`);
+        if (resFallback.ok) {
+          const data2 = await resFallback.json();
+          if (Array.isArray(data2) && data2.length > 0) {
+            countries = data2;
+            break;
+          }
+        }
+      } catch (err) {
+        console.warn(`Mirror falló (${base}):`, err);
       }
     }
 
@@ -310,11 +320,10 @@ export class RadioAPI {
     // Combinar países duplicados sumando sus stationcount
     const countryMap = new Map<string, Country>();
 
-    countries.forEach((country) => {
-      // Asegurar tipos
-      const name = (country as any).name as string;
-      const stationcount = Number((country as any).stationcount || 0);
-      const iso = (country as any).iso_3166_1 as string;
+    countries.forEach((country: any) => {
+      const name = country?.name as string;
+      const stationcount = Number(country?.stationcount || 0);
+      const iso = (country?.iso_3166_1 as string) || (country?.iso_3166_2 as string) || (country?.countrycode as string);
 
       if (name && stationcount > 0) {
         const existing = countryMap.get(name);

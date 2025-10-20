@@ -29,16 +29,20 @@ export function SearchControls({ onSearch, isSearching, onRandomStation }: Searc
     if (!isMobile) {
       const loadCountries = async () => {
         try {
+          console.log('🚀 SearchControls: Cargando lista de países...');
           const countryList = await RadioAPI.getCountries();
+          console.log(`✅ SearchControls: ${countryList.length} países cargados`);
           setCountries(countryList);
         } catch (error) {
-          console.error('Error al cargar países:', error);
+          console.error('❌ SearchControls: Error al cargar países:', error);
         } finally {
           setLoadingCountries(false);
         }
       };
 
       loadCountries();
+    } else {
+      console.log('📱 SearchControls: Modo móvil detectado, no se cargan países');
     }
   }, [isMobile]);
 

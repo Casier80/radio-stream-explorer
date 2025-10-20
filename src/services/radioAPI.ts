@@ -313,6 +313,21 @@ export class RadioAPI {
       }
     }
 
+    // Si no se pudieron obtener desde la API, usar fallback local
+    if (!Array.isArray(countries) || countries.length === 0) {
+      try {
+        const local = await fetch('/countries-fallback.json');
+        if (local.ok) {
+          const localData = await local.json();
+          if (Array.isArray(localData) && localData.length > 0) {
+            countries = localData;
+          }
+        }
+      } catch (e) {
+        console.warn('Fallback local de países falló:', e);
+      }
+    }
+
     if (!Array.isArray(countries) || countries.length === 0) {
       throw new Error('No se pudieron obtener países');
     }

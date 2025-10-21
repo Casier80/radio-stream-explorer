@@ -57,18 +57,38 @@ export class RadioAPI {
       }
     }
 
-    const response = await this.fetchWithUserAgent(
-      `${BASE_URL}/stations/search?${searchParams}`
-    );
-    
-    if (!response.ok) {
-      throw new Error(`Error al buscar emisoras: ${response.statusText}`);
+    const MIRRORS = [
+      BASE_URL,
+      'https://nl1.api.radio-browser.info/json',
+    ];
+
+    let lastError: unknown = null;
+
+    for (const base of MIRRORS) {
+      try {
+        const response = await this.fetchWithUserAgent(
+          `${base}/stations/search?${searchParams}`,
+          7000
+        );
+
+        if (!response.ok) {
+          lastError = new Error(`Error al buscar emisoras: ${response.status} ${response.statusText}`);
+          continue;
+        }
+
+        const stations: RadioStation[] = await response.json();
+        return stations
+          .filter(station => station.url_resolved && station.lastcheckok === 1)
+          .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+      } catch (error) {
+        lastError = error;
+        continue;
+      }
     }
 
-    const stations: RadioStation[] = await response.json();
-    return stations
-      .filter(station => station.url_resolved && station.lastcheckok === 1)
-      .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+    throw lastError instanceof Error
+      ? lastError
+      : new Error('No se pudo conectar con el servicio de radios. Intenta nuevamente.');
   }
 
   private static countryTranslations: { [key: string]: string } = {
@@ -376,24 +396,32 @@ export class RadioAPI {
   }
 
   static async getRandomStation(): Promise<RadioStation | null> {
-    try {
-      const response = await this.fetchWithUserAgent(
-        `${BASE_URL}/stations/search?limit=1&order=random&hidebroken=true`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`Error al obtener emisora aleatoria: ${response.statusText}`);
-      }
+    const MIRRORS = [
+      BASE_URL,
+      'https://nl1.api.radio-browser.info/json',
+    ];
 
-      const stations: RadioStation[] = await response.json();
-      const validStations = stations.filter(
-        station => station.url_resolved && station.lastcheckok === 1
-      );
-      
-      return validStations.length > 0 ? validStations[0] : null;
-    } catch (error) {
-      console.error('Error al obtener emisora aleatoria:', error);
-      return null;
+    for (const base of MIRRORS) {
+      try {
+        const response = await this.fetchWithUserAgent(
+          `${base}/stations/search?limit=1&order=random&hidebroken=true`,
+          7000
+        );
+        
+        if (!response.ok) {
+          continue;
+        }
+
+        const stations: RadioStation[] = await response.json();
+        const validStations = stations.filter(
+          station => station.url_resolved && station.lastcheckok === 1
+        );
+        if (validStations.length > 0) return validStations[0];
+      } catch (_) {
+        continue;
+      }
     }
+
+    return null;
   }
 }

@@ -3,8 +3,30 @@ import type { RadioStation, Country } from '@/types/radio';
 const BASE_URL = 'https://de1.api.radio-browser.info/json';
 
 export class RadioAPI {
-  private static async fetchWithUserAgent(url: string): Promise<Response> {
-    return fetch(url);
+  private static async fetchWithUserAgent(url: string, timeoutMs: number = 5000): Promise<Response> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        mode: 'cors',
+        credentials: 'omit',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      clearTimeout(timeoutId);
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new Error('Tiempo de espera agotado');
+        }
+      }
+      throw error;
+    }
   }
 
   static async searchStations(params: {
@@ -276,74 +298,46 @@ export class RadioAPI {
   };
 
   static async getCountries(): Promise<Country[]> {
-    console.log('🌍 Iniciando carga de países...');
-    // Intento robusto: probar múltiples mirrors y dos endpoints (/countries y /countrycodes)
+    let countries: any[] = [];
+
+    // PASO 1: Cargar fallback local PRIMERO para tener siempre países disponibles
+    try {
+      const local = await fetch('/countries-fallback.json');
+      if (local.ok) {
+        const localData = await local.json();
+        if (Array.isArray(localData) && localData.length > 0) {
+          countries = localData;
+        }
+      }
+    } catch (e) {
+      console.warn('Fallback local no disponible:', e);
+    }
+
+    // PASO 2: Intentar obtener lista actualizada de la API (solo 2 mirrors rápidos)
     const MIRRORS = [
       BASE_URL,
-      'https://api.radio-browser.info/json',
       'https://nl1.api.radio-browser.info/json',
-      'https://fr1.api.radio-browser.info/json',
-      'https://us1.api.radio-browser.info/json',
     ];
-
-    let countries: any[] = [];
 
     for (const base of MIRRORS) {
       try {
-        console.log(`🔍 Probando mirror: ${base}`);
-        // 1) /countries
-        const resMain = await this.fetchWithUserAgent(`${base}/countries`);
-        console.log(`📡 Respuesta /countries: ${resMain.status}`);
+        const resMain = await this.fetchWithUserAgent(`${base}/countries`, 5000);
         if (resMain.ok) {
           const data = await resMain.json();
-          console.log(`✅ Datos recibidos: ${data?.length || 0} países`);
           if (Array.isArray(data) && data.length > 0) {
             countries = data;
             break;
           }
         }
-
-        // 2) Fallback /countrycodes
-        console.log(`🔄 Probando fallback /countrycodes`);
-        const resFallback = await this.fetchWithUserAgent(`${base}/countrycodes`);
-        console.log(`📡 Respuesta /countrycodes: ${resFallback.status}`);
-        if (resFallback.ok) {
-          const data2 = await resFallback.json();
-          console.log(`✅ Datos fallback: ${data2?.length || 0} países`);
-          if (Array.isArray(data2) && data2.length > 0) {
-            countries = data2;
-            break;
-          }
-        }
       } catch (err) {
-        console.error(`❌ Mirror falló (${base}):`, err);
-      }
-    }
-
-    // Si no se pudieron obtener desde la API, usar fallback local
-    if (!Array.isArray(countries) || countries.length === 0) {
-      console.log('⚠️ No se obtuvieron países de la API, usando fallback local...');
-      try {
-        const local = await fetch('/countries-fallback.json');
-        console.log(`📁 Fallback local status: ${local.status}`);
-        if (local.ok) {
-          const localData = await local.json();
-          console.log(`✅ Fallback local: ${localData?.length || 0} países`);
-          if (Array.isArray(localData) && localData.length > 0) {
-            countries = localData;
-          }
-        }
-      } catch (e) {
-        console.error('❌ Fallback local de países falló:', e);
+        // Silenciar errores y seguir con el siguiente mirror
+        continue;
       }
     }
 
     if (!Array.isArray(countries) || countries.length === 0) {
-      console.error('❌ No se pudieron obtener países de ninguna fuente');
-      throw new Error('No se pudieron obtener países. Verifica tu conexión a internet.');
+      throw new Error('No se pudieron cargar países');
     }
-
-    console.log(`✅ Total de países antes de procesar: ${countries.length}`);
 
     // Combinar países duplicados sumando sus stationcount
     const countryMap = new Map<string, Country>();

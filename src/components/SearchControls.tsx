@@ -18,6 +18,7 @@ export function SearchControls({ onSearch, isSearching, onRandomStation }: Searc
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [countries, setCountries] = useState<Country[]>([]);
   const [loadingCountries, setLoadingCountries] = useState(true);
+  const [countryError, setCountryError] = useState(false);
   const [query, setQuery] = useState('');
 
   // Detect if running on mobile/Capacitor
@@ -29,20 +30,18 @@ export function SearchControls({ onSearch, isSearching, onRandomStation }: Searc
     if (!isMobile) {
       const loadCountries = async () => {
         try {
-          console.log('🚀 SearchControls: Cargando lista de países...');
           const countryList = await RadioAPI.getCountries();
-          console.log(`✅ SearchControls: ${countryList.length} países cargados`);
           setCountries(countryList);
+          setCountryError(false);
         } catch (error) {
-          console.error('❌ SearchControls: Error al cargar países:', error);
+          console.error('Error al cargar países:', error);
+          setCountryError(true);
         } finally {
           setLoadingCountries(false);
         }
       };
 
       loadCountries();
-    } else {
-      console.log('📱 SearchControls: Modo móvil detectado, no se cargan países');
     }
   }, [isMobile]);
 
@@ -130,6 +129,11 @@ export function SearchControls({ onSearch, isSearching, onRandomStation }: Searc
                 ))}
               </SelectContent>
             </Select>
+            {countryError && (
+              <p className="text-xs text-muted-foreground">
+                Lista de países cargada desde caché local
+              </p>
+            )}
             <div id="country-help" className="sr-only">
               Filtra las emisoras por país
             </div>

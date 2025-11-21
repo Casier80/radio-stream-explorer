@@ -401,10 +401,13 @@ export class RadioAPI {
       'https://nl1.api.radio-browser.info/json',
     ];
 
+    // Add timestamp to avoid browser caching
+    const timestamp = Date.now();
+
     for (const base of MIRRORS) {
       try {
         const response = await this.fetchWithUserAgent(
-          `${base}/stations/search?limit=1&order=random&hidebroken=true`,
+          `${base}/stations/search?limit=1&order=random&hidebroken=true&_t=${timestamp}`,
           7000
         );
         
